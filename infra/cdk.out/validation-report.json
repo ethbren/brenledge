@@ -1,5 +1,53 @@
 {
   "version": "54.0.0",
   "title": "Validation Report",
-  "pluginReports": []
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "BrenledgeStack/BrenledgeGetWatchlistFn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "2.271.0",
+              "cloudFormationResource": {
+                "templatePath": "BrenledgeStack.template.json",
+                "logicalId": "BrenledgeGetWatchlistFnE20A2F88",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              },
+              "stackTraces": [
+                "...new NodejsFunction in aws-cdk-lib...\nnew BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:119:28)\n<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)\n...node internals, ts-node, ts-node..."
+              ]
+            },
+            {
+              "constructPath": "BrenledgeStack/BrenledgePutWatchlistFn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "2.271.0",
+              "cloudFormationResource": {
+                "templatePath": "BrenledgeStack.template.json",
+                "logicalId": "BrenledgePutWatchlistFnEEF37D34",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              },
+              "stackTraces": [
+                "...new NodejsFunction in aws-cdk-lib...\nnew BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:124:28)\n<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)\n...node internals, ts-node, ts-node..."
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

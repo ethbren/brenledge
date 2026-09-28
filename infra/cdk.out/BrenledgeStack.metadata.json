@@ -1,0 +1,690 @@
+{
+  "/BrenledgeStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/BrenledgeStack/BrenledgeApiRateLimitTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "BrenledgeApiRateLimitTableF5EC9928"
+      }
+    }
+  ],
+  "/BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/BrenledgeStack/SiteURL": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SiteURL"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:220:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/SiteBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SiteBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:221:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/DistributionId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:222:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/UserPoolId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:223:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/UserPoolClientId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolClientId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:224:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/ApiUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:225:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/WatchlistBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WatchlistBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:226:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/RateLimitTableName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RateLimitTableName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:227:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeUserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeUserPool0D510708"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new UserPool2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:39:22)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeWatchlistBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeWatchlistBucket2B25D20C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:76:29)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/BrenledgeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeApiRateLimitTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeApiRateLimitTableF5EC9928"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Table2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:89:28)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeGetWatchlistFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeGetWatchlistFnE20A2F88"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:119:28)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgePutWatchlistFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgePutWatchlistFnEEF37D34"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:124:28)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApi44AF15F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new HttpApi2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:134:21)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeSiteBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeSiteBucketDE1B8B03"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:168:24)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/BrenledgeStack/BrenledgeSiteDistribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeSiteDistributionDDB4B177"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Distribution2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:177:26)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new BucketDeployment2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:199:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeUserPool/BrenledgeWebClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeUserPoolBrenledgeWebClient6E8BA97A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...PropertyInjectable.addClient in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:58:37)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeWatchlistBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeWatchlistBucketPolicy1682C985"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:76:29)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/BrenledgeStack/BrenledgeWatchlistBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeWatchlistBucketAutoDeleteObjectsCustomResource5DF6C0D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeGetWatchlistFn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeGetWatchlistFnServiceRole8EAB25EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:119:28)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgePutWatchlistFn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgePutWatchlistFnServiceRole4E81D408"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new NodejsFunction in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:124:28)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiDefaultStage3DFE6373"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new HttpApi2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:134:21)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/GET--watchlist/GetWatchlistIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiGETwatchlistGetWatchlistIntegrationPermission8BBB1FB3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:150:13)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/GET--watchlist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiGETwatchlist43C1EF3A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:150:13)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/BrenledgeAuthorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiBrenledgeAuthorizer457CD8FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:150:13)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/PutWatchlistIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiPUTwatchlistPutWatchlistIntegrationPermission3DB7D5A9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:157:13)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiPUTwatchlist0FFD88AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:157:13)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeSiteBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeSiteBucketPolicy93D8811A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:168:24)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/BrenledgeStack/BrenledgeSiteBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeSiteBucketAutoDeleteObjectsCustomResource8247480E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/DeployBrenledgeSite/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployBrenledgeSiteAwsCliLayerB0785B05"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new BucketDeployment2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:199:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/DeployBrenledgeSite/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployBrenledgeSiteCustomResource570A059B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new BucketDeployment2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:199:5)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeGetWatchlistFn/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeGetWatchlistFnServiceRoleDefaultPolicy28A1A28F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgePutWatchlistFn/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgePutWatchlistFnServiceRoleDefaultPolicyE37C9515"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/GET--watchlist/GetWatchlistIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiGETwatchlistGetWatchlistIntegrationC9977C0E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:150:13)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/PutWatchlistIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeHttpApiPUTwatchlistPutWatchlistIntegration29BD3CED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        ".../Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/node_modules/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:1:96 in aws-cdk-lib...",
+        "Array.map (:)",
+        "...PropertyInjectable.<anonymous> in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:157:13)"
+      ]
+    }
+  ],
+  "/BrenledgeStack/BrenledgeSiteDistribution/Origin1/S3OriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrenledgeSiteDistributionOrigin1S3OriginAccessControl0C9923EF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Distribution2 in aws-cdk-lib...",
+        "new BrenledgeStack (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/lib/brenledge-stack.ts:177:26)",
+        "<anonymous> (/Users/ethanbrenny/Desktop/All/coding/fun_projects/stock_website/infra/bin/deploy.ts:7:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ]
+}

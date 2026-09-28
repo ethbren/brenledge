@@ -1,0 +1,1539 @@
+{
+ "Description": "Brenledge: static site (S3+CloudFront), Cognito auth, per-user S3 watchlist API, DynamoDB rate limiting",
+ "Resources": {
+  "BrenledgeUserPool0D510708": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_email",
+       "Priority": 1
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 12,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": true,
+      "RequireUppercase": true
+     }
+    },
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolName": "brenledge-users",
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeUserPool/Resource"
+   }
+  },
+  "BrenledgeUserPoolBrenledgeWebClient6E8BA97A": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AccessTokenValidity": 60,
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ClientName": "brenledge-web",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "IdTokenValidity": 60,
+    "RefreshTokenValidity": 43200,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "TokenValidityUnits": {
+     "AccessToken": "minutes",
+     "IdToken": "minutes",
+     "RefreshToken": "minutes"
+    },
+    "UserPoolId": {
+     "Ref": "BrenledgeUserPool0D510708"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeUserPool/BrenledgeWebClient/Resource"
+   }
+  },
+  "BrenledgeWatchlistBucket2B25D20C": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerEnforced"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeWatchlistBucket/Resource"
+   }
+  },
+  "BrenledgeWatchlistBucketPolicy1682C985": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BrenledgeWatchlistBucket2B25D20C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeWatchlistBucket2B25D20C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeWatchlistBucket2B25D20C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeWatchlistBucket2B25D20C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeWatchlistBucket2B25D20C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeWatchlistBucket/Policy/Resource"
+   }
+  },
+  "BrenledgeWatchlistBucketAutoDeleteObjectsCustomResource5DF6C0D3": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BrenledgeWatchlistBucket2B25D20C"
+    }
+   },
+   "DependsOn": [
+    "BrenledgeWatchlistBucketPolicy1682C985"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeWatchlistBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "BrenledgeWatchlistBucket2B25D20C"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "BrenledgeApiRateLimitTableF5EC9928": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "principalId",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "principalId",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "brenledge-api-rate-limit",
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeApiRateLimitTable/Resource"
+   }
+  },
+  "BrenledgeGetWatchlistFnServiceRole8EAB25EB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeGetWatchlistFn/ServiceRole/Resource"
+   }
+  },
+  "BrenledgeGetWatchlistFnServiceRoleDefaultPolicy28A1A28F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeWatchlistBucket2B25D20C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeWatchlistBucket2B25D20C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeApiRateLimitTableF5EC9928",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeApiRateLimitTableF5EC9928",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BrenledgeGetWatchlistFnServiceRoleDefaultPolicy28A1A28F",
+    "Roles": [
+     {
+      "Ref": "BrenledgeGetWatchlistFnServiceRole8EAB25EB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeGetWatchlistFn/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "BrenledgeGetWatchlistFnE20A2F88": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "S3Key": "c74c921fcb1676418353c53448655eb0a86acad78cf8d76be344b63c4ffd1365.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "WATCHLIST_BUCKET": {
+       "Ref": "BrenledgeWatchlistBucket2B25D20C"
+      },
+      "RATE_LIMIT_TABLE": {
+       "Ref": "BrenledgeApiRateLimitTableF5EC9928"
+      },
+      "RATE_LIMIT_MAX": "10",
+      "RATE_LIMIT_WINDOW_SECONDS": "300"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BrenledgeGetWatchlistFnServiceRole8EAB25EB",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "BrenledgeGetWatchlistFnServiceRoleDefaultPolicy28A1A28F",
+    "BrenledgeGetWatchlistFnServiceRole8EAB25EB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeGetWatchlistFn/Resource",
+    "aws:asset:path": "asset.c74c921fcb1676418353c53448655eb0a86acad78cf8d76be344b63c4ffd1365",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BrenledgePutWatchlistFnServiceRole4E81D408": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgePutWatchlistFn/ServiceRole/Resource"
+   }
+  },
+  "BrenledgePutWatchlistFnServiceRoleDefaultPolicyE37C9515": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeWatchlistBucket2B25D20C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeWatchlistBucket2B25D20C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeApiRateLimitTableF5EC9928",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeApiRateLimitTableF5EC9928",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BrenledgePutWatchlistFnServiceRoleDefaultPolicyE37C9515",
+    "Roles": [
+     {
+      "Ref": "BrenledgePutWatchlistFnServiceRole4E81D408"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgePutWatchlistFn/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "BrenledgePutWatchlistFnEEF37D34": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "S3Key": "169c3487b5d82f31e148845085e64b592380a24d610353cd250bf5e9c442b50c.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "WATCHLIST_BUCKET": {
+       "Ref": "BrenledgeWatchlistBucket2B25D20C"
+      },
+      "RATE_LIMIT_TABLE": {
+       "Ref": "BrenledgeApiRateLimitTableF5EC9928"
+      },
+      "RATE_LIMIT_MAX": "10",
+      "RATE_LIMIT_WINDOW_SECONDS": "300"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BrenledgePutWatchlistFnServiceRole4E81D408",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "BrenledgePutWatchlistFnServiceRoleDefaultPolicyE37C9515",
+    "BrenledgePutWatchlistFnServiceRole4E81D408"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgePutWatchlistFn/Resource",
+    "aws:asset:path": "asset.169c3487b5d82f31e148845085e64b592380a24d610353cd250bf5e9c442b50c",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BrenledgeHttpApi44AF15F2": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "CorsConfiguration": {
+     "AllowHeaders": [
+      "authorization",
+      "content-type"
+     ],
+     "AllowMethods": [
+      "GET",
+      "PUT"
+     ],
+     "AllowOrigins": [
+      "*"
+     ],
+     "MaxAge": 600
+    },
+    "Name": "brenledge-api",
+    "ProtocolType": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/Resource"
+   }
+  },
+  "BrenledgeHttpApiDefaultStage3DFE6373": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/DefaultStage/Resource"
+   }
+  },
+  "BrenledgeHttpApiGETwatchlistGetWatchlistIntegrationC9977C0E": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "BrenledgeGetWatchlistFnE20A2F88",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/GET--watchlist/GetWatchlistIntegration/Resource"
+   }
+  },
+  "BrenledgeHttpApiGETwatchlistGetWatchlistIntegrationPermission8BBB1FB3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BrenledgeGetWatchlistFnE20A2F88",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:805516213009:",
+       {
+        "Ref": "BrenledgeHttpApi44AF15F2"
+       },
+       "/*/*/watchlist"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/GET--watchlist/GetWatchlistIntegration-Permission"
+   }
+  },
+  "BrenledgeHttpApiGETwatchlist43C1EF3A": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "BrenledgeHttpApiBrenledgeAuthorizer457CD8FD"
+    },
+    "RouteKey": "GET /watchlist",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "BrenledgeHttpApiGETwatchlistGetWatchlistIntegrationC9977C0E"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/GET--watchlist/Resource"
+   }
+  },
+  "BrenledgeHttpApiBrenledgeAuthorizer457CD8FD": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "AuthorizerType": "JWT",
+    "IdentitySource": [
+     "$request.header.Authorization"
+    ],
+    "JwtConfiguration": {
+     "Audience": [
+      {
+       "Ref": "BrenledgeUserPoolBrenledgeWebClient6E8BA97A"
+      }
+     ],
+     "Issuer": {
+      "Fn::Join": [
+       "",
+       [
+        "https://cognito-idp.us-west-2.amazonaws.com/",
+        {
+         "Ref": "BrenledgeUserPool0D510708"
+        }
+       ]
+      ]
+     }
+    },
+    "Name": "BrenledgeAuthorizer"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/BrenledgeAuthorizer/Resource"
+   }
+  },
+  "BrenledgeHttpApiPUTwatchlistPutWatchlistIntegration29BD3CED": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "BrenledgePutWatchlistFnEEF37D34",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/PutWatchlistIntegration/Resource"
+   }
+  },
+  "BrenledgeHttpApiPUTwatchlistPutWatchlistIntegrationPermission3DB7D5A9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BrenledgePutWatchlistFnEEF37D34",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-west-2:805516213009:",
+       {
+        "Ref": "BrenledgeHttpApi44AF15F2"
+       },
+       "/*/*/watchlist"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/PutWatchlistIntegration-Permission"
+   }
+  },
+  "BrenledgeHttpApiPUTwatchlist0FFD88AD": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "BrenledgeHttpApi44AF15F2"
+    },
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "BrenledgeHttpApiBrenledgeAuthorizer457CD8FD"
+    },
+    "RouteKey": "PUT /watchlist",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "BrenledgeHttpApiPUTwatchlistPutWatchlistIntegration29BD3CED"
+       }
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeHttpApi/PUT--watchlist/Resource"
+   }
+  },
+  "BrenledgeSiteBucketDE1B8B03": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerEnforced"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "aws-cdk:cr-owned:29e3d2d5",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeSiteBucket/Resource"
+   }
+  },
+  "BrenledgeSiteBucketPolicy93D8811A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BrenledgeSiteBucketDE1B8B03"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeSiteBucketDE1B8B03",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeSiteBucketDE1B8B03",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeSiteBucketDE1B8B03",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeSiteBucketDE1B8B03",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "BrenledgeSiteDistributionDDB4B177"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "BrenledgeSiteBucketDE1B8B03",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeSiteBucket/Policy/Resource"
+   }
+  },
+  "BrenledgeSiteBucketAutoDeleteObjectsCustomResource8247480E": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "BrenledgeSiteBucketDE1B8B03"
+    }
+   },
+   "DependsOn": [
+    "BrenledgeSiteBucketPolicy93D8811A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeSiteBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "BrenledgeSiteDistributionOrigin1S3OriginAccessControl0C9923EF": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "BrenledgeStackBrenledgeSiteDOrigin1S3OriginAccessControl4B2C46C1",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeSiteDistribution/Origin1/S3OriginAccessControl/Resource"
+   }
+  },
+  "BrenledgeSiteDistributionDDB4B177": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Comment": "Brenledge stock tracker",
+     "CustomErrorResponses": [
+      {
+       "ErrorCachingMinTTL": 0,
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCachingMinTTL": 0,
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD"
+      ],
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "BrenledgeStackBrenledgeSiteDistributionOrigin1F7C681D4",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2and3",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "BrenledgeSiteBucketDE1B8B03",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "BrenledgeStackBrenledgeSiteDistributionOrigin1F7C681D4",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "BrenledgeSiteDistributionOrigin1S3OriginAccessControl0C9923EF",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      }
+     ],
+     "PriceClass": "PriceClass_100"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/BrenledgeSiteDistribution/Resource"
+   }
+  },
+  "DeployBrenledgeSiteAwsCliLayerB0785B05": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/DeployBrenledgeSite/AwsCliLayer/Resource",
+    "aws:asset:path": "asset.98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
+   }
+  },
+  "DeployBrenledgeSiteCustomResource570A059B": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "cdk-hnb659fds-assets-805516213009-us-west-2"
+    ],
+    "SourceObjectKeys": [
+     "c60bdec1d82a465e14a036667f0b0498f69db7a384e67f0ab92f01587312ef22.zip",
+     "788b9f1a3668610abe7a87116bda3eb8254c0bd8ddb378db1224585669ec2f67.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {
+      "<<marker:0xbaba:0>>": {
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Ref": "BrenledgeUserPool0D510708"
+         },
+         "\""
+        ]
+       ]
+      },
+      "<<marker:0xbaba:1>>": {
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Ref": "BrenledgeUserPoolBrenledgeWebClient6E8BA97A"
+         },
+         "\""
+        ]
+       ]
+      },
+      "<<marker:0xbaba:2>>": {
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Fn::GetAtt": [
+           "BrenledgeHttpApi44AF15F2",
+           "ApiEndpoint"
+          ]
+         },
+         "\""
+        ]
+       ]
+      }
+     }
+    ],
+    "SourceMarkersConfig": [
+     {},
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "BrenledgeSiteBucketDE1B8B03"
+    },
+    "WaitForDistributionInvalidation": true,
+    "Prune": true,
+    "DistributionId": {
+     "Ref": "BrenledgeSiteDistributionDDB4B177"
+    },
+    "DistributionPaths": [
+     "/*"
+    ],
+    "OutputObjectKeys": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/DeployBrenledgeSite/CustomResource/Default"
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource"
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::cdk-hnb659fds-assets-805516213009-us-west-2"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::cdk-hnb659fds-assets-805516213009-us-west-2/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging",
+        "s3:Abort*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BrenledgeSiteBucketDE1B8B03",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BrenledgeSiteBucketDE1B8B03",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "cloudfront:GetInvalidation",
+        "cloudfront:CreateInvalidation"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-805516213009-us-west-2",
+     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+     }
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "DeployBrenledgeSiteAwsCliLayerB0785B05"
+     }
+    ],
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+    "aws:asset:path": "asset.35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/6VSwY4TMQz9lu05DUt7QOI2OxUCCbFVC1wQqjIZd3CbSarYaSnR/DtKsp2WRRxWSJH8bOfZL3Zmcvbmtby/Uyea6nY/NdjIuGal90KdaBO16yyyk/ELgV86Z0S9tSO+gNogWL5NlcggaC7jQ9B7yNmCvsVJjz/RTt5ObtumfjSXOUWyXK0CuwUYYHhsdqCZJoP4L/Z3UVJLZ1Cfr5qK/wJlhbBmxdCDfaGwv8kXXQ+KYBDt2aretY2Mn1VjIMnMYBBG9U2rNta1sCP5KZt3wWpGZwWqXsaVK4Rsr88sKC1kExURMMkqGdHCwbhzkvEkbjEGLu1krLd27JKKge+R6Mn7qM7gv4LP/hptZ4Dd9f4FDEIdsFMMJ3U+zmR8z3yoDpgqJJPcNasuiy8ghVYucEEfLEPn1UXDM/d6rwr8w3n8BT6XHr1BaONCu/XOsowLJPbYhMxfzx89dmgrrYGodpZ9+en/CN+Sh0HUgdj1KyAXvC7DH/EfqaV3R2zBpy2LPP70ULSdGAlPCzZppht1Im1QVieqDeYxZ1GBD4EHkT6B3NGr4+xepnO3I8SpD5axB7kq9jfmdSeR4QMAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "BrenledgeStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "SiteURL": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "BrenledgeSiteDistributionDDB4B177",
+        "DomainName"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "SiteBucketName": {
+   "Value": {
+    "Ref": "BrenledgeSiteBucketDE1B8B03"
+   }
+  },
+  "DistributionId": {
+   "Value": {
+    "Ref": "BrenledgeSiteDistributionDDB4B177"
+   }
+  },
+  "UserPoolId": {
+   "Value": {
+    "Ref": "BrenledgeUserPool0D510708"
+   }
+  },
+  "UserPoolClientId": {
+   "Value": {
+    "Ref": "BrenledgeUserPoolBrenledgeWebClient6E8BA97A"
+   }
+  },
+  "ApiUrl": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BrenledgeHttpApi44AF15F2",
+     "ApiEndpoint"
+    ]
+   }
+  },
+  "WatchlistBucketName": {
+   "Value": {
+    "Ref": "BrenledgeWatchlistBucket2B25D20C"
+   }
+  },
+  "RateLimitTableName": {
+   "Value": {
+    "Ref": "BrenledgeApiRateLimitTableF5EC9928"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

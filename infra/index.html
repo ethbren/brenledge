@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brenledge — stock return tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ========== Auth screens (shown until signed in) ========== -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-card">
+    <p class="brand">Brenledge</p>
+    <p class="brand-sub">Sign in to see your ledger and watchlist.</p>
+
+    <form id="signin-form" class="auth-form" novalidate>
+      <div class="field">
+        <label for="signin-email">Email</label>
+        <input id="signin-email" type="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="signin-password">Password</label>
+        <input id="signin-password" type="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="full">Sign in</button>
+      <div id="signin-status" class="status-line"></div>
+      <p class="auth-switch">No account? <a href="#" id="show-signup-link">Sign up</a></p>
+    </form>
+
+    <form id="signup-form" class="auth-form hidden" novalidate>
+      <div class="field">
+        <label for="signup-email">Email</label>
+        <input id="signup-email" type="email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="signup-password">Password</label>
+        <input id="signup-password" type="password" required autocomplete="new-password" minlength="12">
+        <p class="settings-note">At least 12 characters, with upper, lower, a digit, and a symbol.</p>
+      </div>
+      <button type="submit" class="full">Create account</button>
+      <div id="signup-status" class="status-line"></div>
+      <p class="auth-switch">Already have an account? <a href="#" id="show-signin-link">Sign in</a></p>
+    </form>
+
+    <form id="confirm-form" class="auth-form hidden" novalidate>
+      <p class="settings-note">We emailed you a confirmation code — enter it below.</p>
+      <div class="field">
+        <label for="confirm-email">Email</label>
+        <input id="confirm-email" type="email" required>
+      </div>
+      <div class="field">
+        <label for="confirm-code">Confirmation code</label>
+        <input id="confirm-code" type="text" inputmode="numeric" required autocomplete="one-time-code">
+      </div>
+      <button type="submit" class="full">Confirm email</button>
+      <button type="button" id="resend-code" class="link-btn">Resend code</button>
+      <div id="confirm-status" class="status-line"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ========== Main app (hidden until signed in) ========== -->
+<div id="app-shell" class="app hidden">
+
+  <aside class="sidebar">
+    <p class="brand">Brenledge</p>
+    <p class="brand-sub">Real returns, across every broker.</p>
+    <p class="signed-in-line">Signed in as <strong id="signed-in-as"></strong> · <button type="button" id="signout-btn" class="link-btn">Sign out</button></p>
+
+    <form id="txn-form">
+      <fieldset>
+        <legend>Log a purchase</legend>
+
+        <div class="field">
+          <label for="ticker">Ticker</label>
+          <input id="ticker" type="text" placeholder="AAPL" autocomplete="off" required>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="shares">Shares</label>
+            <input id="shares" type="number" step="any" min="0" placeholder="10" required>
+          </div>
+          <div class="field">
+            <label for="price">Price paid</label>
+            <input id="price" type="number" step="any" min="0" placeholder="185.20" required>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="date">Date bought</label>
+            <input id="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="fees">Fees ($)</label>
+            <input id="fees" type="number" step="any" min="0" placeholder="0">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="platform">Platform / broker</label>
+          <input id="platform" list="platform-list" placeholder="Fidelity, Robinhood…" required>
+          <datalist id="platform-list"></datalist>
+        </div>
+
+        <button type="submit" class="full">Add to ledger</button>
+      </fieldset>
+    </form>
+
+    <fieldset>
+      <legend>Price data</legend>
+      <div class="field">
+        <label for="api-key">Alpha Vantage API key</label>
+        <input id="api-key" type="text" placeholder="paste your free key">
+      </div>
+      <button type="button" id="save-key" class="secondary full">Save key</button>
+      <p class="settings-note">
+        Prices come from Alpha Vantage. Get a free key at
+        <a href="https://www.alphavantage.co/support/#api-key" target="_blank" rel="noopener">alphavantage.co</a> —
+        the free tier allows 25 requests/day, so refresh sparingly. Your key and all
+        transactions stay only in this browser (localStorage); nothing is sent anywhere else.
+      </p>
+      <div id="key-status" class="status-line"></div>
+    </fieldset>
+  </aside>
+
+  <main>
+    <h2 class="section-title">
+      Watchlist
+      <span id="watchlist-count" class="count-pill" style="float:right;">0/20</span>
+    </h2>
+    <div class="chart-panel" style="margin-bottom:8px;">
+      <div id="watchlist-chips" class="watchlist-chips"></div>
+      <form id="watchlist-form" class="chart-controls" style="margin-top:10px; margin-bottom:0;">
+        <input id="watchlist-input" type="text" placeholder="Add a ticker (e.g. NVDA)" maxlength="10" style="flex:1; min-width:160px; padding:7px 9px; border:1px solid var(--line-strong); border-radius:var(--radius); background:var(--paper);">
+        <button type="submit" class="secondary">Add</button>
+        <span id="watchlist-status" class="status-line" style="margin:0;"></span>
+      </form>
+    </div>
+    <p class="footer-note" style="margin-top:8px;">
+      Stocks you're watching, not necessarily positions you own — stored per-account in S3, capped at 20.
+    </p>
+
+    <h2 class="section-title">Portfolio</h2>
+    <div class="summary-row" id="summary-cards"></div>
+
+    <h2 class="section-title">
+      Holdings
+      <button type="button" id="refresh-prices" class="secondary" style="float:right; font-size:11px; padding:6px 10px;">Refresh prices</button>
+    </h2>
+    <div id="refresh-status" class="status-line"></div>
+    <div class="table-wrap">
+      <table id="holdings-table">
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Platform</th>
+            <th class="num">Shares</th>
+            <th class="num">Avg cost</th>
+            <th class="num">Current</th>
+            <th class="num">Market value</th>
+            <th class="num">Gain / loss</th>
+            <th class="num">Annualized return</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="holdings-body">
+          <tr><td colspan="9" class="empty-state">No positions logged yet — add your first purchase on the left.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title">Price history</h2>
+    <div class="chart-panel">
+      <div class="chart-controls">
+        <select id="chart-ticker-select"><option value="">Select a ticker…</option></select>
+        <button type="button" id="load-history" class="secondary">Load chart</button>
+        <span id="chart-status" class="status-line" style="margin:0;"></span>
+      </div>
+      <canvas id="price-chart" height="110"></canvas>
+    </div>
+
+    <h2 class="section-title">
+      Transaction log
+    </h2>
+    <div class="table-wrap">
+      <table id="txn-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Ticker</th>
+            <th>Platform</th>
+            <th class="num">Shares</th>
+            <th class="num">Price</th>
+            <th class="num">Fees</th>
+            <th class="num">Cost basis</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="txn-body">
+          <tr><td colspan="8" class="empty-state">Nothing logged yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="footer-note">
+      Annualized return uses a compound-growth estimate — ((current value ÷ cost basis) ^ (365 ÷ days held)) − 1 —
+      per lot, so a stock you've held six months and one you've held six years are compared on the same basis.
+      Positions bought across several dates are shown lot-by-lot in the transaction log below the holdings table,
+      and rolled up per ticker + platform in Holdings.
+    </p>
+  </main>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="app.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

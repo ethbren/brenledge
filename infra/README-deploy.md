@@ -1,9 +1,25 @@
-# Deploying Ledger to AWS
+# Deploying Brenledge to AWS
 
-This deploys the site as a static S3 bucket served through CloudFront
-(HTTPS, CDN caching, no server to manage). Estimated cost for personal use
-is typically under $1/month (S3 storage + a handful of CloudFront requests);
-AWS bills usage, not a flat hosting fee.
+This now deploys considerably more than the static site: Cognito
+authentication, a per-user watchlist API (S3 + Lambda + API Gateway), and a
+DynamoDB-backed rate limiter in front of that API.
+
+## ⚠️ First: tear down the old stack
+
+If you previously deployed the earlier `LedgerStockWebsiteStack`, destroy it
+**before** switching to these files — the stack name and most construct IDs
+changed, so CDK will otherwise create a second, parallel set of resources
+rather than replacing the old ones (leaving the old CloudFront distribution
+running and billing you).
+
+```bash
+cd infra
+git stash            # or otherwise set aside these new files temporarily
+npx cdk destroy       # tears down the old LedgerStockWebsiteStack
+git stash pop         # bring the new files back
+```
+
+If you never deployed the old version, skip this.
 
 ## Folder layout expected
 
@@ -11,86 +27,75 @@ AWS bills usage, not a flat hosting fee.
 stock_website/
 ├── index.html
 ├── style.css
-├── app.js
-└── infra/              <- this CDK app
+├── app.js            <- existing local ledger (unchanged, still localStorage)
+├── auth.js            <- new: Cognito sign-up/in, email MFA
+├── watchlist.js        <- new: calls the watchlist API
+├── main.js              <- new: wires auth + watchlist into the page
+└── infra/
     ├── bin/deploy.ts
-    ├── lib/stock-website-stack.ts
+    ├── lib/brenledge-stack.ts
+    ├── lambda/
+    │   ├── common/rateLimit.ts
+    │   └── watchlist/
+    │       ├── get.ts
+    │       └── put.ts
     ├── package.json
     ├── tsconfig.json
     └── cdk.json
 ```
 
-The stack uploads everything in `stock_website/` (excluding `infra/` and
-`README.md`) to S3, so keep this folder structure as-is.
-
-## One-time setup
-
-1. **AWS account + credentials.** Install the AWS CLI and configure it:
-   ```bash
-   aws configure
-   ```
-   (needs an AWS access key with permissions to create S3/CloudFront/IAM
-   resources — an admin or power-user IAM user is simplest while testing).
-
-2. **Install dependencies**, from inside `infra/`:
-   ```bash
-   cd infra
-   npm install
-   ```
-
-3. **Bootstrap CDK** (one-time per AWS account/region — sets up the small
-   support stack CDK needs to deploy assets):
-   ```bash
-   npx cdk bootstrap
-   ```
-
-## Deploy
+## Setup
 
 ```bash
+cd infra
+npm install          # now also pulls in @aws-sdk/*, esbuild (for bundling the Lambdas), @types/aws-lambda
+npx cdk bootstrap     # skip if you already bootstrapped this account/region
 npx cdk deploy
 ```
 
-CDK will show you the resources it's about to create/change and ask for
-confirmation. On success it prints outputs including:
+The frontend never needs manual configuration — `BucketDeployment` writes a
+`config.json` (Cognito pool ID, app client ID, API URL) into the deployed
+site automatically on every `cdk deploy`, resolved from the real
+CloudFormation values at deploy time.
 
-- `SiteURL` — the public `https://xxxxx.cloudfront.net` URL for your site
-- `BucketName` — the S3 bucket holding the files
-- `DistributionId` — useful if you ever need to manually invalidate the CDN cache
+## What gets created
 
-CloudFront distributions typically take a few minutes to finish deploying
-globally the first time, even after `cdk deploy` completes.
+- **Cognito User Pool** (`brenledge-users`) + app client — self-service
+  sign-up, required verified email. MFA is currently **off** (disabled for
+  now to simplify testing) — see the comment at the top of the User Pool
+  block in `brenledge-stack.ts` for how to turn TOTP MFA back on later.
+- **S3 bucket** for per-user watchlists — private, no public/direct-browser
+  access; only the two Lambdas below can read/write it.
+- **DynamoDB table** (`brenledge-api-rate-limit`) — tracks request counts
+  per user per 5-minute window; the watchlist Lambdas check and increment
+  it on every call.
+- **Two Lambda functions + an HTTP API** — `GET /watchlist` and
+  `PUT /watchlist`, both behind a Cognito JWT authorizer, both capped at 10
+  calls per 5 minutes per signed-in user, returning HTTP 429 past that.
+- **S3 + CloudFront** for the static site itself, same as before, just
+  renamed.
 
-## Re-deploying after you edit the site
+## Testing after deploy
 
-Just run `npx cdk deploy` again — it re-uploads changed files to S3 and
-automatically invalidates the CloudFront cache for you (configured via
-`distributionPaths: ['/*']` in the stack).
+1. Open the new `SiteURL` from the outputs — you'll land on a sign-in
+   screen now instead of the app directly.
+2. Sign up with a real email you can check. You'll get a confirmation code
+   immediately — enter it.
+3. Sign in with your password — that's the whole sign-in flow while MFA
+   is off.
+4. Once in, try the new Watchlist panel at the top: add a few tickers,
+   remove one, refresh the page and confirm it reloads from S3 (not just
+   memory).
+5. Try adding an 21st ticker — should be rejected both in the UI and (if
+   you bypass the UI) by the Lambda itself.
+6. Hammer `PUT /watchlist` more than 10 times inside 5 minutes (e.g. by
+   rapidly adding/removing) and confirm you get a "rate limited" message.
 
-## Using your own domain (optional)
-
-By default you get a `*.cloudfront.net` URL. To use e.g. `stocks.yourdomain.com`:
-
-1. Request a certificate in **us-east-1** (required for CloudFront) via
-   AWS Certificate Manager, and validate it (DNS validation is easiest).
-2. In `lib/stock-website-stack.ts`, uncomment the `domainNames` and
-   `certificate` lines in the `Distribution` and fill them in.
-3. Add a DNS record (Route 53 alias, or a CNAME elsewhere) pointing your
-   domain at the CloudFront distribution's domain name.
-4. `npx cdk deploy` again.
-
-## Tearing it down
+## Tearing down
 
 ```bash
 npx cdk destroy
 ```
 
-This removes the S3 bucket, its contents, and the CloudFront distribution
-(the stack is configured with `RemovalPolicy.DESTROY` and
-`autoDeleteObjects: true` for exactly this kind of easy cleanup). For a
-production site you'd normally flip those to `RETAIN`.
-
-## Note on the Alpha Vantage API key
-
-Nothing about hosting changes how the app handles your API key — it's still
-entered in the browser and stored in that browser's `localStorage`, not
-baked into the deployed files or sent to AWS.
+Removes everything above, including both S3 buckets' contents (thanks to
+`autoDeleteObjects: true`).

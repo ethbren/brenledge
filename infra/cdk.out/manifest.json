@@ -1,28 +1,28 @@
 {
   "version": "54.0.0",
   "artifacts": {
-    "LedgerStockWebsiteStack.assets": {
+    "BrenledgeStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "LedgerStockWebsiteStack.assets.json",
+        "file": "BrenledgeStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "LedgerStockWebsiteStack": {
+    "BrenledgeStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://805516213009/us-west-2",
       "properties": {
-        "templateFile": "LedgerStockWebsiteStack.template.json",
+        "templateFile": "BrenledgeStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::805516213009:role/cdk-hnb659fds-deploy-role-805516213009-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::805516213009:role/cdk-hnb659fds-cfn-exec-role-805516213009-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-805516213009-us-west-2/0bd70b63e60d1f3d24622b33317f2b109605cdda8a848f71d7931196d4e958df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-805516213009-us-west-2/81d8612248b5c5f1031cec7a219000029519d123fe289b905d515ae838b1a4fb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "LedgerStockWebsiteStack.assets"
+          "BrenledgeStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::805516213009:role/cdk-hnb659fds-lookup-role-805516213009-us-west-2",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "LedgerStockWebsiteStack.assets"
+        "BrenledgeStack.assets"
       ],
-      "additionalMetadataFile": "LedgerStockWebsiteStack.metadata.json",
-      "displayName": "LedgerStockWebsiteStack"
+      "additionalMetadataFile": "BrenledgeStack.metadata.json",
+      "displayName": "BrenledgeStack"
     },
     "Tree": {
       "type": "cdk:tree",
